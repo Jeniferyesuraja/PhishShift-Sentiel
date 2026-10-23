@@ -1,0 +1,12 @@
+{
+  "scenario": "CP-5 demo",
+  "message": "Urgent password reset required. Verify your account now using hxxp://secure[.]portal[.]review/login before 5 PM.",
+  "expected_verdict": "PHISHING-LIKELY",
+  "risk_band": "76 / 100",
+  "decision_support": "Decision support only - not a guarantee of safety.",
+  "notes": [
+    "Urgency and account verification language were detected.",
+    "Defanged URL and portal lure were preserved without opening any link.",
+    "Analyst should escalate to a trusted channel for confirmation."
+  ]
+}
