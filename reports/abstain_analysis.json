@@ -1,0 +1,10 @@
+{
+  "total_messages": 504,
+  "high_confidence_count": 0,
+  "abstain_count": 0,
+  "covered_count": 504,
+  "abstain_rate": 0.0,
+  "coverage_rate": 1.0,
+  "threshold": 70,
+  "decision_rule": "Abstain when confidence score falls in the uncertain range [35, 65)."
+}

@@ -1,0 +1,10 @@
+{
+  "rows_processed": 3024,
+  "average_score": 6.7923,
+  "perturbations": [
+    "Character substitution and token obfuscation",
+    "URL defanging and punctuation variation",
+    "Synonym and shorthand replacements"
+  ],
+  "notes": "Perturbation checks ensure the model does not overreact to harmless formatting changes while preserving risk cues."
+}
