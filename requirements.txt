@@ -1,0 +1,12 @@
+Flask==3.0.3
+gunicorn==22.0.0
+pandas==2.2.2
+numpy==2.1.2
+scikit-learn==1.5.2
+joblib==1.4.2
+matplotlib==3.9.2
+seaborn==0.13.1
+pytest==8.3.2
+ruff==0.6.9
+black==24.8.0
+reportlab==4.2.2

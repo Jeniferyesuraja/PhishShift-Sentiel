@@ -1,0 +1,1 @@
+"""PhishShift package."""
