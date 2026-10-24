@@ -8,6 +8,11 @@ def score_message(text: str, sender_domain_type: str = "unknown", url_summary: d
     urgency_words = ["urgent", "immediate", "today", "final", "now", "expire", "due", "lockout", "verify"]
     credential_words = ["password", "login", "credential", "reset", "security code", "verify identity"]
     threat_words = ["suspended", "deactivate", "blocked", "legal", "payment", "inbox", "quota"]
+    safe_phrases = [
+        "completed", "no further action", "no action required", "no action is required", "already verified",
+        "service desk", "confirmed", "confirmed the update", "routine maintenance", "normal access", "remains available",
+        "no response needed", "processed successfully", "review finished", "unchanged", "already processed"
+    ]
     score = 0.0
     cues: list[str] = []
     for word in urgency_words:
@@ -23,11 +28,11 @@ def score_message(text: str, sender_domain_type: str = "unknown", url_summary: d
             score += 0.10
             cues.append(f"threat cue: {word}")
     if sender_domain_type in {"lookalike", "shortener", "unknown"}:
-        score += 0.22
+        score += 0.18
         cues.append(f"sender domain type: {sender_domain_type}")
     if url_summary:
         if url_summary.get("has_shortener"):
-            score += 0.25
+            score += 0.22
             cues.append("shortened or suspicious URL")
         if url_summary.get("lookalike_score", 0.0) > 0.5:
             score += 0.15
@@ -37,10 +42,22 @@ def score_message(text: str, sender_domain_type: str = "unknown", url_summary: d
         score += 0.08 * punctuation_count
         cues.append("dense punctuation")
     if lowered.count("click") + lowered.count("link") > 0:
-        score += 0.1
+        score += 0.10
         cues.append("link action cue")
     if "dear" not in lowered and len(text.split()) > 7:
         score += 0.05
         cues.append("generic greeting absent")
-    score = min(score, 1.0)
+
+    for phrase in safe_phrases:
+        if phrase in lowered:
+            score = max(0.0, score - 0.22)
+            cues.append(f"safe context: {phrase}")
+    if "not required" in lowered or "no further action" in lowered or "no action required" in lowered:
+        score -= 0.15
+        cues.append("legitimate no-action language")
+    if "completed" in lowered and ("password" in lowered or "reset" in lowered):
+        score -= 0.18
+        cues.append("completed password-reset context")
+
+    score = min(max(score, 0.0), 1.0)
     return round(score, 4), cues

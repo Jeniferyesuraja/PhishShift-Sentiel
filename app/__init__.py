@@ -867,10 +867,25 @@ ACCEPTANCE_PAGE = """
           `;
         }).join('');
         const note = test.note || (test.summary || 'Evidence generated from the live model score.');
-        const badgeClass = status === 'PASS' ? 'safe' : 'phish';
+        const badgeClass = status === 'PASS' ? 'safe' : status === 'ABSTAINED' ? 'uncertain' : 'phish';
+        const cardClass = status === 'PASS' ? 'pass' : status === 'ABSTAINED' ? 'fail' : 'fail';
         const message = test.input_message || test.baseline_message || '';
+        const thresholdsText = test.thresholds ? Object.entries(test.thresholds).map(([model, bounds]) => `${model}: ${bounds.lower}-${bounds.upper}`).join('; ') : 'No thresholds provided.';
+        const falseImpact = test.false_positive_impact ? `
+          <div class="acceptance-section">
+            <div class="kicker">False-positive impact</div>
+            <p>${test.false_positive_impact.analyst_experience}</p>
+            <p>Flagged: ${test.false_positive_impact.flagged || 0} / ${test.false_positive_impact.legit_urgent_total || 0}; abstained: ${test.false_positive_impact.abstained || 0} / ${test.false_positive_impact.legit_urgent_total || 0}; FPR ${(test.false_positive_impact.fpr || 0).toFixed(3)}</p>
+          </div>
+        ` : '';
+        const cueList = test.top_risk_cues ? `
+          <details class="acceptance-section">
+            <summary class="kicker" style="cursor:pointer;">Risk cues</summary>
+            <ul class="list">${(test.top_risk_cues || []).map((cue) => '<li>' + cue + '</li>').join('')}</ul>
+          </details>
+        ` : '';
         return `
-          <article class="acceptance-card ${status === 'PASS' ? 'pass' : 'fail'}">
+          <article class="acceptance-card ${cardClass}">
             <div class="panel-header">
               <h3>${test.name}</h3>
               <span class="badge ${badgeClass}">${status}</span>
@@ -881,7 +896,7 @@ ACCEPTANCE_PAGE = """
                   <div class="kicker">${test.title || 'Acceptance evidence'}</div>
                   <div class="score-value">${score}%</div>
                 </div>
-                <span class="badge ${status === 'PASS' ? 'safe' : 'phish'}">${status}</span>
+                <span class="badge ${badgeClass}">${status}</span>
               </div>
               <div class="acceptance-score-bar large"><span style="width:${score}%"></span></div>
               <div class="acceptance-section">
@@ -894,6 +909,10 @@ ACCEPTANCE_PAGE = """
                 <div class="acceptance-model-list">${rows}</div>
               </div>
               <div class="acceptance-section">
+                <div class="kicker">Thresholds</div>
+                <p>${thresholdsText}</p>
+              </div>
+              <div class="acceptance-section">
                 <div class="kicker">Verdict</div>
                 <p>${test.summary || note}</p>
               </div>
@@ -901,8 +920,8 @@ ACCEPTANCE_PAGE = """
                 <div class="kicker">Abstain</div>
                 <p>${String(test.abstain ?? false)}</p>
               </div>
-              ${test.top_risk_cues ? `<div class="acceptance-section"><div class="kicker">Top risk cues</div><ul class="list">${(test.top_risk_cues || []).map((cue) => '<li>' + cue + '</li>').join('')}</ul></div>` : ''}
-              ${test.false_positive_impact ? `<div class="acceptance-section"><div class="kicker">False-positive impact</div><p>${test.false_positive_impact.analyst_experience}</p><p>Flagged: ${test.false_positive_impact.flagged} / ${test.false_positive_impact.legit_urgent_total} (${(test.false_positive_impact.fpr || 0).toFixed(3)})</p></div>` : ''}
+              ${cueList}
+              ${falseImpact}
               ${test.note ? `<div class="acceptance-section"><div class="kicker">Model limitation</div><p>${test.note}</p></div>` : ''}
             </div>
           </article>

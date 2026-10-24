@@ -1,0 +1,61 @@
+{
+  "name": "AT-02",
+  "title": "Unfamiliar phishing phrasing",
+  "status": "PASS",
+  "summary": "The unseen campaign was caught by 2 model(s); 1 abstained and 0 missed.",
+  "campaign_group": "qr_sms_smish",
+  "absent_from_training": true,
+  "input_message": "Tax or billing follow-up A recent account mismatch was flagged during the regular review cycle, and the access status still needs a final check before the update is cleared. Please review the current status and confirm the latest access note.",
+  "defanged_message": "Tax or billing follow-up A recent account mismatch was flagged during the regular review cycle, and the access status still needs a final check before the update is cleared[.] Please review the current status and confirm the latest access note[.]",
+  "models": [
+    {
+      "model": "Rules",
+      "probability": 0.39,
+      "verdict": "ABSTAIN",
+      "abstain": true,
+      "risk_cues": [
+        "urgency cue: final",
+        "shortened or suspicious URL",
+        "generic greeting absent"
+      ],
+      "score_bar": 39
+    },
+    {
+      "model": "TF-IDF LR",
+      "probability": 0.6879,
+      "verdict": "PHISHING",
+      "abstain": false,
+      "risk_cues": [
+        "credential or sensitive account wording",
+        "urgency or deadline pressure",
+        "URL or domain suspicion"
+      ],
+      "score_bar": 69
+    },
+    {
+      "model": "Third model",
+      "probability": 0.6947,
+      "verdict": "PHISHING",
+      "abstain": false,
+      "risk_cues": [
+        "credential or sensitive account wording",
+        "urgency or deadline pressure",
+        "URL or domain suspicion"
+      ],
+      "score_bar": 69
+    }
+  ],
+  "verdict": "PASS",
+  "caught": 2,
+  "abstained": 1,
+  "missed": 0,
+  "abstain": true,
+  "score": 0.6947,
+  "top_risk_cues": [
+    "credential or sensitive account wording",
+    "generic greeting absent",
+    "shortened or suspicious URL",
+    "urgency cue: final",
+    "urgency or deadline pressure"
+  ]
+}

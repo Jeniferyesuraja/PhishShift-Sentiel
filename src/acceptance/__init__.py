@@ -1,0 +1,1 @@
+from .generate_acceptance import run_acceptance_suite

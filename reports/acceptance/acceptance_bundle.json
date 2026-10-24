@@ -1,0 +1,197 @@
+{
+  "generated_at": "2026-10-24T08:28:21Z",
+  "tests": [
+    {
+      "name": "AT-01",
+      "title": "Legitimate password-reset notice",
+      "status": "PASS",
+      "summary": "PASS - every model stayed below the abstain lower bound (0.38, 0.45). Absent from pass state: abstain thresholds are Rules 0.38-0.62 and TF-IDF LR / Third 0.45-0.55; PASS requires all model scores below the lower bound.",
+      "input_message": "Your password reset was completed by the service desk and the account review confirms no further action is required. Please keep this message for your records and contact support only if you expected a change to your account access.",
+      "defanged_message": "Your password reset was completed by the service desk and the account review confirms no further action is required[.] Please keep this message for your records and contact support only if you expected a change to your account access[.]",
+      "models": [
+        {
+          "model": "Rules",
+          "probability": 0.0,
+          "verdict": "LEGITIMATE",
+          "abstain": false,
+          "risk_cues": [
+            "credential ask: password",
+            "credential ask: reset",
+            "generic greeting absent",
+            "safe context: completed",
+            "safe context: no further action"
+          ],
+          "score_bar": 0
+        },
+        {
+          "model": "TF-IDF LR",
+          "probability": 0.4376,
+          "verdict": "LEGITIMATE",
+          "abstain": false,
+          "risk_cues": [
+            "credential or sensitive account wording",
+            "urgency or deadline pressure",
+            "URL or domain suspicion"
+          ],
+          "score_bar": 44
+        },
+        {
+          "model": "Third model",
+          "probability": 0.4398,
+          "verdict": "LEGITIMATE",
+          "abstain": false,
+          "risk_cues": [
+            "credential or sensitive account wording",
+            "urgency or deadline pressure",
+            "URL or domain suspicion"
+          ],
+          "score_bar": 44
+        }
+      ],
+      "false_positive": false,
+      "false_positive_impact": {
+        "legit_urgent_total": 4,
+        "flagged": 0,
+        "abstained": 1,
+        "flagged_total": 0,
+        "abstained_total": 1,
+        "fpr": 0.0,
+        "thresholds": {
+          "Rules": {
+            "lower": 0.38,
+            "upper": 0.62
+          },
+          "TF-IDF LR": {
+            "lower": 0.45,
+            "upper": 0.55
+          },
+          "Third model": {
+            "lower": 0.45,
+            "upper": 0.55
+          }
+        },
+        "analyst_experience": "Wasted triage minutes and alert fatigue from escalating legitimate urgent messages into human review."
+      },
+      "verdict": "PASS",
+      "abstain": false,
+      "score": 0.4398,
+      "top_risk_cues": [
+        "credential ask: password",
+        "credential ask: reset",
+        "credential or sensitive account wording",
+        "generic greeting absent",
+        "safe context: completed"
+      ],
+      "thresholds": {
+        "Rules": {
+          "lower": 0.38,
+          "upper": 0.62
+        },
+        "TF-IDF LR": {
+          "lower": 0.45,
+          "upper": 0.55
+        },
+        "Third model": {
+          "lower": 0.45,
+          "upper": 0.55
+        }
+      }
+    },
+    {
+      "name": "AT-02",
+      "title": "Unfamiliar phishing phrasing",
+      "status": "PASS",
+      "summary": "The unseen campaign was caught by 2 model(s); 1 abstained and 0 missed.",
+      "campaign_group": "qr_sms_smish",
+      "absent_from_training": true,
+      "input_message": "Tax or billing follow-up A recent account mismatch was flagged during the regular review cycle, and the access status still needs a final check before the update is cleared. Please review the current status and confirm the latest access note.",
+      "defanged_message": "Tax or billing follow-up A recent account mismatch was flagged during the regular review cycle, and the access status still needs a final check before the update is cleared[.] Please review the current status and confirm the latest access note[.]",
+      "models": [
+        {
+          "model": "Rules",
+          "probability": 0.39,
+          "verdict": "ABSTAIN",
+          "abstain": true,
+          "risk_cues": [
+            "urgency cue: final",
+            "shortened or suspicious URL",
+            "generic greeting absent"
+          ],
+          "score_bar": 39
+        },
+        {
+          "model": "TF-IDF LR",
+          "probability": 0.6879,
+          "verdict": "PHISHING",
+          "abstain": false,
+          "risk_cues": [
+            "credential or sensitive account wording",
+            "urgency or deadline pressure",
+            "URL or domain suspicion"
+          ],
+          "score_bar": 69
+        },
+        {
+          "model": "Third model",
+          "probability": 0.6947,
+          "verdict": "PHISHING",
+          "abstain": false,
+          "risk_cues": [
+            "credential or sensitive account wording",
+            "urgency or deadline pressure",
+            "URL or domain suspicion"
+          ],
+          "score_bar": 69
+        }
+      ],
+      "verdict": "PASS",
+      "caught": 2,
+      "abstained": 1,
+      "missed": 0,
+      "abstain": true,
+      "score": 0.6947,
+      "top_risk_cues": [
+        "credential or sensitive account wording",
+        "generic greeting absent",
+        "shortened or suspicious URL",
+        "urgency cue: final",
+        "urgency or deadline pressure"
+      ]
+    },
+    {
+      "name": "AT-03",
+      "title": "Defanged URL and punctuation changes",
+      "status": "FAIL",
+      "summary": "The model was materially sensitive to punctuation and URL formatting changes, which is a limitation in the current feature space.",
+      "baseline_message": "The password reset was completed and your security review is active. No further action is required and the service desk has already verified the request.",
+      "perturbed_message": "URGENT!!! Your password reset is pending and the account review requires confirmation now! Please verify hxxp://secure[.]portal[.]review/login before the security check closes.",
+      "models": [
+        {
+          "model": "Rules",
+          "baseline_probability": 0.0,
+          "perturbed_probability": 1.0,
+          "shift": 1.0,
+          "score_bar": 100
+        },
+        {
+          "model": "TF-IDF LR",
+          "baseline_probability": 0.4318,
+          "perturbed_probability": 0.6054,
+          "shift": 0.1736,
+          "score_bar": 61
+        },
+        {
+          "model": "Third model",
+          "baseline_probability": 0.4148,
+          "perturbed_probability": 0.6052,
+          "shift": 0.1904,
+          "score_bar": 61
+        }
+      ],
+      "verdict": "FAIL",
+      "abstain": true,
+      "score": 0.4547,
+      "note": "Model limitation: formatting changes such as URL defanging and punctuation materially shift the score, indicating surface-form sensitivity rather than robust semantic understanding."
+    }
+  ]
+}

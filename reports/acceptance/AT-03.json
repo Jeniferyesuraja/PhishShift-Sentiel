@@ -1,0 +1,35 @@
+{
+  "name": "AT-03",
+  "title": "Defanged URL and punctuation changes",
+  "status": "FAIL",
+  "summary": "The model was materially sensitive to punctuation and URL formatting changes, which is a limitation in the current feature space.",
+  "baseline_message": "The password reset was completed and your security review is active. No further action is required and the service desk has already verified the request.",
+  "perturbed_message": "URGENT!!! Your password reset is pending and the account review requires confirmation now! Please verify hxxp://secure[.]portal[.]review/login before the security check closes.",
+  "models": [
+    {
+      "model": "Rules",
+      "baseline_probability": 0.0,
+      "perturbed_probability": 1.0,
+      "shift": 1.0,
+      "score_bar": 100
+    },
+    {
+      "model": "TF-IDF LR",
+      "baseline_probability": 0.4318,
+      "perturbed_probability": 0.6054,
+      "shift": 0.1736,
+      "score_bar": 61
+    },
+    {
+      "model": "Third model",
+      "baseline_probability": 0.4148,
+      "perturbed_probability": 0.6052,
+      "shift": 0.1904,
+      "score_bar": 61
+    }
+  ],
+  "verdict": "FAIL",
+  "abstain": true,
+  "score": 0.4547,
+  "note": "Model limitation: formatting changes such as URL defanging and punctuation materially shift the score, indicating surface-form sensitivity rather than robust semantic understanding."
+}

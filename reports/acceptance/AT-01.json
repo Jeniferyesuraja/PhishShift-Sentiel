@@ -1,0 +1,96 @@
+{
+  "name": "AT-01",
+  "title": "Legitimate password-reset notice",
+  "status": "PASS",
+  "summary": "PASS - every model stayed below the abstain lower bound (0.38, 0.45). Absent from pass state: abstain thresholds are Rules 0.38-0.62 and TF-IDF LR / Third 0.45-0.55; PASS requires all model scores below the lower bound.",
+  "input_message": "Your password reset was completed by the service desk and the account review confirms no further action is required. Please keep this message for your records and contact support only if you expected a change to your account access.",
+  "defanged_message": "Your password reset was completed by the service desk and the account review confirms no further action is required[.] Please keep this message for your records and contact support only if you expected a change to your account access[.]",
+  "models": [
+    {
+      "model": "Rules",
+      "probability": 0.0,
+      "verdict": "LEGITIMATE",
+      "abstain": false,
+      "risk_cues": [
+        "credential ask: password",
+        "credential ask: reset",
+        "generic greeting absent",
+        "safe context: completed",
+        "safe context: no further action"
+      ],
+      "score_bar": 0
+    },
+    {
+      "model": "TF-IDF LR",
+      "probability": 0.4376,
+      "verdict": "LEGITIMATE",
+      "abstain": false,
+      "risk_cues": [
+        "credential or sensitive account wording",
+        "urgency or deadline pressure",
+        "URL or domain suspicion"
+      ],
+      "score_bar": 44
+    },
+    {
+      "model": "Third model",
+      "probability": 0.4398,
+      "verdict": "LEGITIMATE",
+      "abstain": false,
+      "risk_cues": [
+        "credential or sensitive account wording",
+        "urgency or deadline pressure",
+        "URL or domain suspicion"
+      ],
+      "score_bar": 44
+    }
+  ],
+  "false_positive": false,
+  "false_positive_impact": {
+    "legit_urgent_total": 4,
+    "flagged": 0,
+    "abstained": 1,
+    "flagged_total": 0,
+    "abstained_total": 1,
+    "fpr": 0.0,
+    "thresholds": {
+      "Rules": {
+        "lower": 0.38,
+        "upper": 0.62
+      },
+      "TF-IDF LR": {
+        "lower": 0.45,
+        "upper": 0.55
+      },
+      "Third model": {
+        "lower": 0.45,
+        "upper": 0.55
+      }
+    },
+    "analyst_experience": "Wasted triage minutes and alert fatigue from escalating legitimate urgent messages into human review."
+  },
+  "verdict": "PASS",
+  "abstain": false,
+  "score": 0.4398,
+  "top_risk_cues": [
+    "credential ask: password",
+    "credential ask: reset",
+    "credential or sensitive account wording",
+    "generic greeting absent",
+    "safe context: completed"
+  ],
+  "thresholds": {
+    "Rules": {
+      "lower": 0.38,
+      "upper": 0.62
+    },
+    "TF-IDF LR": {
+      "lower": 0.45,
+      "upper": 0.55
+    },
+    "Third model": {
+      "lower": 0.45,
+      "upper": 0.55
+    }
+  }
+}
