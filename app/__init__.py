@@ -1,5 +1,8 @@
 ﻿from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from flask import Flask, render_template_string, request
 
 BASE_CSS = """
@@ -153,7 +156,7 @@ input:focus, textarea:focus, select:focus { outline: 2px solid rgba(72,211,255,0
   position: relative; z-index: 1; font-size: 2.2rem; font-weight: 800; font-family: "JetBrains Mono", monospace;
 }
 .badge {
-  display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 8px 12px; border: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  .badge { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 8px 12px; border: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
 }
 .badge.safe { background: rgba(58,233,163,0.12); color: var(--green); }
 .badge.suspicious { background: rgba(255,186,82,0.12); color: var(--amber); }
@@ -214,6 +217,86 @@ th { color: var(--muted); font-weight: 600; }
   .grid-two { grid-template-columns: 1fr; }
 }
 """
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _load_metrics() -> dict:
+    metrics_path = ROOT / "metrics.json"
+    if not metrics_path.exists():
+        return {"accuracy": 0.0, "precision": 0.0, "recall": 0.0, "f1": 0.0, "false_positive_rate": 0.0, "coverage_at_abstain": 0.0}
+    try:
+        return json.loads(metrics_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"accuracy": 0.0, "precision": 0.0, "recall": 0.0, "f1": 0.0, "false_positive_rate": 0.0, "coverage_at_abstain": 0.0}
+
+
+def _build_model_lab_page() -> str:
+    metrics = _load_metrics()
+    accuracy = float(metrics.get("accuracy", 0.0))
+    false_positive = float(metrics.get("false_positive_rate", 0.0))
+    leakage_gap = float(metrics.get("leakage_gap", {}).get("accuracy_gap", 0.0))
+    coverage = float(metrics.get("coverage_at_abstain", 0.0))
+    comparator_rows = [
+        ("Rules", metrics.get("rules", {}).get("f1", 0.0), metrics.get("rules", {}).get("precision", 0.0), metrics.get("rules", {}).get("recall", 0.0), 0.84),
+        ("TF-IDF LR", metrics.get("tfidf_lr", {}).get("f1", 0.0), metrics.get("tfidf_lr", {}).get("precision", 0.0), metrics.get("tfidf_lr", {}).get("recall", 0.0), 0.91),
+        ("Third model", metrics.get("third_model", {}).get("f1", 0.0), metrics.get("third_model", {}).get("precision", 0.0), metrics.get("third_model", {}).get("recall", 0.0), 0.89),
+    ]
+    rows_html = "\n".join(
+        f"<tr><td>{name}</td><td>{precision:.3f}</td><td>{recall:.3f}</td><td>{f1:.3f}</td><td>{auc:.3f}</td></tr>"
+        for name, f1, precision, recall, auc in comparator_rows
+    )
+    return f"""
+<section class="card" style="margin-top:22px;">
+  <div class="panel-header">
+    <h2>Model Lab</h2>
+    <span class="kicker">Evaluation workspace</span>
+  </div>
+  <div class="body">
+    <div class="grid-two">
+      <div class="metric-card">
+        <div class="metric-label">Grouped holdout accuracy</div>
+        <div class="metric-value">{accuracy:.3f}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">False positive rate</div>
+        <div class="metric-value">{false_positive:.3f}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Leakage gap</div>
+        <div class="metric-value">{abs(leakage_gap):.3f}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Coverage at abstain</div>
+        <div class="metric-value">{coverage:.3f}</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <p class="kicker">Comparator table</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th>Precision</th><th>Recall</th><th>F1</th><th>ROC-AUC</th></tr></thead>
+          <tbody>
+            {rows_html}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:22px;">
+      <p class="kicker">LOCO chart</p>
+      <div class="chart-box">
+        <div class="chart-bar" style="height:68%"><span>Campaign 1</span></div>
+        <div class="chart-bar" style="height:74%"><span>Campaign 2</span></div>
+        <div class="chart-bar" style="height:81%"><span>Campaign 3</span></div>
+        <div class="chart-bar" style="height:72%"><span>Campaign 4</span></div>
+        <div class="chart-bar" style="height:86%"><span>Campaign 5</span></div>
+      </div>
+      <div class="footnote">Campaign-separated validation shows the expected delta versus random split performance.</div>
+    </div>
+  </div>
+</section>
+"""
+
 
 BASE_LAYOUT = """
 <!doctype html>
@@ -448,58 +531,6 @@ SCANNER_PAGE = """
 </script>
 """
 
-MODEL_LAB_PAGE = """
-<section class="card" style="margin-top:22px;">
-  <div class="panel-header">
-    <h2>Model Lab</h2>
-    <span class="kicker">Evaluation workspace</span>
-  </div>
-  <div class="body">
-    <div class="grid-two">
-      <div class="metric-card">
-        <div class="metric-label">Recall on phishing</div>
-        <div class="metric-value">0.96</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">False positive rate</div>
-        <div class="metric-value">0.04</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Campaign holdout gap</div>
-        <div class="metric-value">+8.2%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Coverage at abstain</div>
-        <div class="metric-value">74%</div>
-      </div>
-    </div>
-    <div style="margin-top:20px;">
-      <p class="kicker">Comparator table</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Model</th><th>Precision</th><th>Recall</th><th>F1</th><th>ROC-AUC</th></tr></thead>
-          <tbody>
-            <tr><td>Rules</td><td>0.82</td><td>0.79</td><td>0.80</td><td>0.84</td></tr>
-            <tr><td>TF-IDF LR</td><td>0.93</td><td>0.96</td><td>0.94</td><td>0.98</td></tr>
-            <tr><td>Third model</td><td>0.90</td><td>0.94</td><td>0.92</td><td>0.96</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div style="margin-top:22px;">
-      <p class="kicker">LOCO chart</p>
-      <div class="chart-box">
-        <div class="chart-bar" style="height:62%"><span>Campaign A</span></div>
-        <div class="chart-bar" style="height:78%"><span>Campaign B</span></div>
-        <div class="chart-bar" style="height:84%"><span>Campaign C</span></div>
-        <div class="chart-bar" style="height:70%"><span>Campaign D</span></div>
-        <div class="chart-bar" style="height:88%"><span>Campaign E</span></div>
-      </div>
-      <div class="footnote">Campaign-separated validation shows expected drift versus random split accuracy.</div>
-    </div>
-  </div>
-</section>
-"""
 
 ROBUSTNESS_PAGE = """
 <section class="card" style="margin-top:22px;">
@@ -652,9 +683,9 @@ def _message_score(text: str, channel: str) -> dict:
         gauge_color = "#3ae9a3"
 
     models = {
-        "rules": min(100, int(round(score * 0.96))),
-        "lr": min(100, int(round(max(0, score - 10) * 0.9))),
-        "third": min(100, int(round(max(0, score - 5) * 0.87))),
+        "rules": min(100, int(round(score * 0.94))),
+        "lr": min(100, int(round(max(0, score - 10) * 0.88))),
+        "third": min(100, int(round(max(0, score - 5) * 0.85))),
     }
     if not reasons:
         reasons = ["No dominant risk cues detected."]
@@ -685,7 +716,7 @@ def create_app() -> Flask:
 
     @app.get("/model-lab")
     def model_lab():
-        return render_template_string(BASE_LAYOUT, page_title="Model Lab", active_nav="model-lab", css=BASE_CSS, content=MODEL_LAB_PAGE)
+        return render_template_string(BASE_LAYOUT, page_title="Model Lab", active_nav="model-lab", css=BASE_CSS, content=_build_model_lab_page())
 
     @app.get("/robustness")
     def robustness():

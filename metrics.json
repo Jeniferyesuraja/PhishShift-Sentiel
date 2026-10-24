@@ -1,6 +1,87 @@
 {
-  "accuracy": 1.0,
-  "precision": 1.0,
-  "recall": 1.0,
-  "f1": 1.0
+  "dataset_rows": 37,
+  "campaigns": 13,
+  "holdout_campaigns": [
+    "hr_policy",
+    "vendor_invoice",
+    "team_meeting"
+  ],
+  "grouped_holdout": {
+    "rules": {
+      "accuracy": 0.125,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "coverage": 0.375,
+      "covered_accuracy": 0.3333,
+      "false_positive_rate": 0.6667,
+      "coverage_at_abstain": 0.375,
+      "loco_mean_f1": 0.0,
+      "loco_std_f1": 0.0
+    },
+    "tfidf_lr": {
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "coverage": 0.0,
+      "false_positive_rate": 0.0,
+      "coverage_at_abstain": 0.0,
+      "loco_mean_f1": 0.9615,
+      "loco_std_f1": 0.1387
+    },
+    "third_model": {
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "coverage": 0.0,
+      "false_positive_rate": 0.0,
+      "coverage_at_abstain": 0.0,
+      "loco_mean_f1": 0.9615,
+      "loco_std_f1": 0.1387
+    }
+  },
+  "random_split": {
+    "rules": {
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "coverage": 0.5,
+      "covered_accuracy": 0.0
+    },
+    "tfidf_lr": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "coverage": 1.0,
+      "covered_accuracy": 1.0
+    },
+    "third_model": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "coverage": 1.0,
+      "covered_accuracy": 1.0
+    }
+  },
+  "loco": {
+    "tfidf_lr": {
+      "mean_accuracy": 0.9615,
+      "std_accuracy": 0.1387
+    }
+  },
+  "leakage_gap": {
+    "accuracy_gap": 1.0,
+    "f1_gap": 1.0
+  },
+  "accuracy": 0.0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "false_positive_rate": 0.0,
+  "coverage_at_abstain": 0.0
 }

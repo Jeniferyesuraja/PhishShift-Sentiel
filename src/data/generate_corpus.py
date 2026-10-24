@@ -28,13 +28,13 @@ CAMPAIGNS = [
     {"group": "hr_policy", "label": "phishing", "channels": ["email"], "domain_types": ["lookalike", "shortener", "unknown"]},
     {"group": "vpn_expiry", "label": "phishing", "channels": ["email", "sms"], "domain_types": ["lookalike", "shortener", "unknown"]},
     {"group": "qr_sms_smish", "label": "phishing", "channels": ["sms"], "domain_types": ["shortener", "unknown", "lookalike"]},
-    {"group": "password_reset", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "corporate", "unknown"]},
-    {"group": "payroll_slip", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "corporate", "unknown"]},
-    {"group": "it_maintenance", "label": "legitimate", "channels": ["email"], "domain_types": ["corporate", "corporate", "unknown"]},
-    {"group": "security_alert", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "corporate", "unknown"]},
-    {"group": "travel_approval", "label": "legitimate", "channels": ["email"], "domain_types": ["corporate", "corporate", "unknown"]},
+    {"group": "password_reset", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "freemail", "unknown"]},
+    {"group": "payroll_slip", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "freemail", "unknown"]},
+    {"group": "it_maintenance", "label": "legitimate", "channels": ["email"], "domain_types": ["corporate", "unknown", "freemail"]},
+    {"group": "security_alert", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", " unknown", "freemail"]},
+    {"group": "travel_approval", "label": "legitimate", "channels": ["email"], "domain_types": ["corporate", "unknown", "freemail"]},
     {"group": "benefits_enrollment", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "unknown", "freemail"]},
-    {"group": "team_meeting", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "corporate", "unknown"]},
+    {"group": "team_meeting", "label": "legitimate", "channels": ["email", "sms"], "domain_types": ["corporate", "unknown", "freemail"]},
     {"group": "vendor_invoice", "label": "legitimate", "channels": ["email"], "domain_types": ["corporate", "unknown", "freemail"]},
 ]
 
@@ -62,6 +62,24 @@ LEGIT_URLS = [
     "hxxps://vendor[.]company[.]com/invoice",
 ]
 
+PHISHING_TEMPLATES = [
+    "The account review is still open and your approval is pending. Please confirm the latest access note through the portal before the end of the day.",
+    "We noticed a mismatch in the account record and the review queue needs your confirmation before the reminder expires.",
+    "Your profile requires a final check. Please review the approval request in the portal and confirm the update so the account stays active.",
+    "The payment review is pending, and one outstanding access notice remains in the review page for confirmation today.",
+    "This reminder is part of the account verification workflow. Please complete the review step in the portal and confirm before the deadline.",
+    "The latest security audit found a pending action on your account. Please follow the portal instruction and approve the request before close.",
+]
+
+LEGIT_TEMPLATES = [
+    "Your account review is complete and there is no further action required. The latest access note is available in the portal for reference.",
+    "We noticed a mismatch in the account record and resolved it during the normal review process. No additional confirmation is needed.",
+    "Your profile was checked during the standard approval routine, and the current status is active with no follow-up required.",
+    "The payment review for this period is complete and no action is required unless a payroll adjustment is requested by the team.",
+    "This reminder is part of the standard account verification workflow. The review step has already been completed and no urgent action is needed.",
+    "The latest security audit confirms that no action is required for your account. Please keep this notice for your records and contact support if needed.",
+]
+
 
 def make_url_features(url: str) -> dict:
     host = url.replace("hxxp://", "").replace("hxxps://", "")
@@ -84,65 +102,53 @@ def make_url_features(url: str) -> dict:
 def defang_url(url: str) -> str:
     if not url:
         return url
-    cleaned = url.strip()
-    cleaned = cleaned.replace("https://", "hxxps://").replace("http://", "hxxp://")
-    cleaned = cleaned.replace(".", "[.]")
-    return cleaned
+    cleaned = url.strip().replace("https://", "hxxps://").replace("http://", "hxxp://")
+    return cleaned.replace(".", "[.]")
 
 
 def generate_rows() -> list[dict]:
     rows: list[dict] = []
-    campaign_counter = Counter()
     start_date = datetime(2024, 1, 10)
-
-    for campaign in CAMPAIGNS:
+    for campaign_index, campaign in enumerate(CAMPAIGNS):
         group = campaign["group"]
         label = campaign["label"]
         for idx in range(28):
-            campaign_counter[group] += 1
-            channel = random.choice(campaign["channels"])
+            channel = random.choice(campaign["channels"]).lower()
             if idx % 5 == 0:
-                channel = channel.upper()
+                channel = "sms" if channel == "email" else "email"
             sender_domain_type = random.choice(campaign["domain_types"])
             if label == "phishing":
-                base_url = random.choice(PHISHING_URLS)
+                sender_domain_type = random.choice(["lookalike", "unknown", "freemail", "corporate"])
                 subject = random.choice([
-                    "Urgent action required",
-                    "Account verification needed",
-                    "Final invoice notice",
-                    "Security alert - update now",
-                    "Action required today",
-                    "Payroll correction needed",
+                    "Review needed",
+                    "Account notice",
+                    "Authorization request",
+                    "Access update",
+                    "Billing follow-up",
+                    "Policy change alert",
                 ])
-                body_variants = [
-                    "Your account has been flagged. Review the secure portal and confirm your details before noon.",
-                    "We noticed unusual access to your mailbox. Please verify this request now to avoid lockout.",
-                    "This is a final reminder: complete the requested update to keep your account active.",
-                    "A payment request requires your approval today, and delay may cause service interruption.",
-                ]
-                body = body_variants[idx % len(body_variants)]
+                body = random.choice(PHISHING_TEMPLATES)
                 if idx % 4 == 0:
-                    body = body.replace("account", "profile")
-                    body = body.replace("secure portal", "secure portal access")
+                    body = body + " We recommend confirming the request before the business deadline so access stays active."
+                if idx % 6 == 0:
+                    body = body.replace("review", "review and confirm")
+                base_url = random.choice(PHISHING_URLS)
             else:
-                base_url = random.choice(LEGIT_URLS)
+                sender_domain_type = random.choice(["corporate", "unknown", "freemail", "lookalike"])
                 subject = random.choice([
                     "Password reset confirmation",
                     "Payroll slip available",
                     "Scheduled IT maintenance",
-                    "Security alert from corporate systems",
-                    "Travel approval approved",
+                    "Corporate security notice",
+                    "Travel approval confirmed",
                     "Benefits enrollment reminder",
                 ])
-                body_variants = [
-                    "Your password reset was completed successfully. If you did not request this, contact the service desk.",
-                    "Payroll slip is now available in the company portal, no action required.",
-                    "We are performing scheduled maintenance between 10:00 PM and 11:00 PM. There is no impact to your work.",
-                    "A new security alert has been generated from corporate systems and is available in the portal.",
-                ]
-                body = body_variants[idx % len(body_variants)]
-                if idx % 6 == 0:
-                    body = body + " This is a routine reminder from the helpdesk."
+                body = random.choice(LEGIT_TEMPLATES)
+                if group in {"password_reset", "payroll_slip"} and idx % 3 == 0:
+                    body = body + " This communication is informational and no urgent action is required."
+                if idx % 7 == 0:
+                    body = body + " If you did not make this request, contact the service desk to review the status."
+                base_url = random.choice(LEGIT_URLS)
 
             if idx % 9 == 0:
                 subject = ""
@@ -151,10 +157,8 @@ def generate_rows() -> list[dict]:
             if idx % 13 == 0:
                 body = body.replace(" ", "  ")
 
-            collected_date = start_date + timedelta(days=(idx * 4 + len(group) * 3) % 120)
-            message_id = f"{group}_{idx + 1:03d}"
             row = {
-                "message_id": message_id,
+                "message_id": f"{group}_{idx + 1:03d}",
                 "channel": channel,
                 "subject_or_title": subject,
                 "body_text": body,
@@ -162,10 +166,8 @@ def generate_rows() -> list[dict]:
                 "sender_domain_type": sender_domain_type,
                 "label": label,
                 "campaign_group": group,
-                "collected_date": collected_date.strftime("%Y-%m-%d"),
+                "collected_date": (start_date + timedelta(days=(campaign_index * 3 + idx * 5) % 150)).strftime("%Y-%m-%d"),
             }
-            if idx % 7 == 0:
-                row["channel"] = random.choice(["email", "sms", "EMAIL", "Sms"])
             rows.append(row)
 
     return rows
@@ -175,46 +177,24 @@ def write_manifest(rows: list[dict]) -> None:
     counts = defaultdict(lambda: {"email": 0, "sms": 0})
     for row in rows:
         counts[row["campaign_group"]][row["channel"].lower()] += 1
-
     entries = []
     for campaign in CAMPAIGNS:
         group = campaign["group"]
-        label = campaign["label"]
-        channel_counts = counts[group]
+        df = counts[group]
         entries.append(
             {
                 "campaign_group": group,
-                "label": label,
-                "count": sum(channel_counts.values()),
-                "channel_email": channel_counts.get("email", 0),
-                "channel_sms": channel_counts.get("sms", 0),
+                "label": campaign["label"],
+                "count": df.get("email", 0) + df.get("sms", 0),
+                "channel_email": df.get("email", 0),
+                "channel_sms": df.get("sms", 0),
                 "source": "locally authored",
                 "license": "CC0",
                 "seed": SEED,
                 "generated_date": datetime.now().strftime("%Y-%m-%d"),
             }
         )
-
-    manifest = pd.DataFrame(entries)
-    manifest.to_csv(ROOT / "data" / "SOURCE_MANIFEST.csv", index=False)
-
-    provenance = ROOT / "docs" / "corpus_provenance.md"
-    lines = [
-        "# Corpus provenance",
-        "",
-        "- Source: locally authored synthetic campaign data",
-        "- License: CC0",
-        f"- Generation seed: {SEED}",
-        f"- Date: {datetime.now().strftime('%Y-%m-%d')}",
-        "",
-        "## Counts by campaign",
-        "",
-    ]
-    for row in entries:
-        lines.append(
-            f"- {row['campaign_group']} ({row['label']}): total={row['count']}, email={row['channel_email']}, sms={row['channel_sms']}"
-        )
-    provenance.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    pd.DataFrame(entries).to_csv(ROOT / "data" / "SOURCE_MANIFEST.csv", index=False)
 
 
 def main() -> None:

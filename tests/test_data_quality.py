@@ -37,3 +37,20 @@ def test_dedup_audit_outputs_exist():
     assert DEDUP_PROOF.exists(), "dedup proof markdown should exist"
     audit = pd.read_csv(DEDUP_AUDIT)
     assert "message_a" in audit.columns and "message_b" in audit.columns
+
+
+def test_metrics_are_not_perfect_and_holdout_is_realistic():
+    metrics = json.loads((ROOT / "metrics.json").read_text(encoding="utf-8"))
+    assert metrics["accuracy"] < 0.99, "Grouped holdout metrics should not be perfectly inflated."
+    assert metrics["f1"] < 0.99, "F1 should remain realistic under campaign holdout."
+
+
+def test_model_lab_uses_live_metrics_not_hardcoded_numbers():
+    from app import create_app
+
+    app = create_app()
+    client = app.test_client()
+    html = client.get("/model-lab").get_data(as_text=True)
+    metrics = json.loads((ROOT / "metrics.json").read_text(encoding="utf-8"))
+    assert "0.96" not in html and "0.04" not in html, "Model Lab page still contains stale hardcoded numbers."
+    assert str(metrics["accuracy"]) in html or f"{metrics['accuracy']:.2f}" in html

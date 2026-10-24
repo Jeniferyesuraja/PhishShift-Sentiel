@@ -1,0 +1,7 @@
+split,model,accuracy,precision,recall,f1,coverage,covered_accuracy,false_positive_rate,coverage_at_abstain,loco_mean_f1,loco_std_f1
+grouped_holdout,rules,0.125,0.0,0.0,0.0,0.375,0.3333,0.6667,0.375,0.0,0.0
+grouped_holdout,tfidf_lr,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.9615,0.1387
+grouped_holdout,third_model,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.9615,0.1387
+random_split,rules,0.0,0.0,0.0,0.0,0.5,0.0,,,,
+random_split,tfidf_lr,1.0,1.0,1.0,1.0,1.0,1.0,,,,
+random_split,third_model,1.0,1.0,1.0,1.0,1.0,1.0,,,,
