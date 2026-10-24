@@ -1,4 +1,4 @@
-# PhishShift Sentinel
+![PhishShift Sentinel logo](app/static/img/phishshift_logo_horizontal.svg)
 
 PhishShift Sentinel is a synthetic, educational phishing-risk scanner for helpdesk triage. It scores incoming email/SMS content, explains the signals that triggered the score, and avoids opening any live links.
 

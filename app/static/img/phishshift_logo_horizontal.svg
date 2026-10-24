@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 280" role="img" aria-label="PhishShift Sentinel logo">
+  <defs>
+    <linearGradient id="wordGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E0F2FE"/>
+      <stop offset="100%" stop-color="#67E8F9"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="58" y1="18" x2="191" y2="204" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#12306B"/>
+      <stop offset="100%" stop-color="#071226"/>
+    </linearGradient>
+    <linearGradient id="shieldRim" x1="58" y1="20" x2="196" y2="202" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#67E8F9"/>
+      <stop offset="50%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#2DD4BF"/>
+    </linearGradient>
+    <linearGradient id="envStroke" x1="94" y1="87" x2="188" y2="170" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#67E8F9"/>
+      <stop offset="100%" stop-color="#2DD4BF"/>
+    </linearGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="880" height="280" rx="28" fill="#050D1F"/>
+
+  <g transform="translate(26 22) scale(1.12)">
+    <ellipse cx="106" cy="111" rx="82" ry="72" fill="#67E8F9" opacity="0.14"/>
+    <path d="M106 12 L188 44 V101 C188 150 158 184 106 206 C54 184 24 150 24 101 V44 Z" fill="url(#shieldGrad)"/>
+    <path d="M106 12 L188 44 V101 C188 150 158 184 106 206 C54 184 24 150 24 101 V44 Z" fill="none" stroke="url(#shieldRim)" stroke-width="4"/>
+    <path d="M106 26 L170 52 V100 C170 140 146 166 106 183 C66 166 42 140 42 100 V52 Z" fill="none" stroke="#A5F3FC" stroke-opacity="0.25" stroke-width="2"/>
+
+    <path d="M74 78 L106 112 L138 78" fill="none" stroke="#FB7185" stroke-opacity="0.7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 6" transform="translate(12 10)"/>
+
+    <rect x="58" y="74" width="96" height="64" rx="10" fill="#0B1F45" stroke="url(#envStroke)" stroke-width="5"/>
+    <path d="M66 84 L106 120 L146 84" fill="none" stroke="url(#envStroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M66 84 V136 H146 V84" fill="none" stroke="url(#envStroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g filter="url(#softGlow)">
+      <line x1="62" y1="115" x2="150" y2="115" stroke="url(#envStroke)" stroke-opacity="0.7" stroke-width="2"/>
+    </g>
+
+    <circle cx="152" cy="142" r="16" fill="#071226" stroke="#67E8F9" stroke-width="2.5"/>
+    <path d="M144 143 L150 150 L164 134" fill="none" stroke="#5EEAD4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(250 70)">
+    <text x="0" y="82" fill="url(#wordGrad)" font-size="92" font-weight="800" letter-spacing="-3" font-family="Inter, 'Segoe UI', Arial, sans-serif">PhishShift</text>
+    <text x="4" y="140" fill="#22D3EE" font-size="26" font-weight="700" letter-spacing="7" font-family="Inter, 'Segoe UI', Arial, sans-serif">SENTINEL</text>
+    <line x1="0" y1="158" x2="210" y2="158" stroke="#FB7185" stroke-width="4" stroke-linecap="round"/>
+    <text x="0" y="204" fill="#D8EAFB" opacity="0.78" font-size="22" font-weight="700" letter-spacing="2.5" font-family="Inter, 'Segoe UI', Arial, sans-serif">SPOT THE SHIFT. STOP THE PHISH.</text>
+  </g>
+</svg>

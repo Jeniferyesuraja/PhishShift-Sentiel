@@ -87,12 +87,37 @@ code, pre, .mono { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, mo
 }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand-mark {
-  width: 38px; height: 38px; border-radius: 12px;
-  background: linear-gradient(135deg, rgba(72,211,255,0.26), rgba(59,130,246,0.17));
-  border: 1px solid rgba(72,211,255,0.36);
-  display: grid; place-items: center;
-  font-weight: 800;
-  color: var(--accent);
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 14px;
+  background: rgba(8, 20, 36, 0.5);
+  border: 1px solid rgba(103, 232, 249, 0.24);
+  box-shadow: inset 0 0 18px rgba(103, 232, 249, 0.12);
+}
+.brand-logo {
+  width: 40px; height: 40px; display: block;
+  filter: drop-shadow(0 0 16px rgba(103, 232, 249, 0.18));
+}
+.scanner-hero {
+  display: flex; justify-content: center; padding: 18px 0 10px;
+}
+.scanner-hero-icon {
+  width: 96px; height: 96px; display: block;
+  filter: drop-shadow(0 0 18px rgba(103, 232, 249, 0.22));
+  animation: logoGlow 3s ease-in-out infinite alternate;
+}
+.scanner-loader {
+  display: grid; place-items: center; gap: 10px; padding-top: 8px;
+}
+.scanner-loader-icon {
+  width: 64px; height: 64px; display: block; opacity: 0.92;
+  filter: drop-shadow(0 0 18px rgba(103, 232, 249, 0.24));
+  animation: logoGlow 2.2s ease-in-out infinite alternate;
+}
+.scan-beam {
+  position: relative; width: 150px; height: 4px; border-radius: 999px;
+  background: linear-gradient(90deg, transparent 0%, rgba(165,243,252,0.9) 50%, transparent 100%);
+  box-shadow: 0 0 18px rgba(165,243,252,0.65);
+  animation: scanPulse 1.5s ease-in-out infinite;
 }
 .brand-text h1 { margin: 0; font-size: 1.15rem; }
 .brand-text small { color: var(--muted); display: block; margin-top: 2px; }
@@ -204,6 +229,18 @@ mark:hover::after {
   height: 18px; border-radius: 999px; background: linear-gradient(90deg, rgba(148,163,184,0.14), rgba(148,163,184,0.24), rgba(148,163,184,0.14)); background-size: 200% 100%; animation: pulse 1.2s infinite linear;
 }
 @keyframes pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes logoGlow {
+  from { transform: scale(0.985); opacity: 0.9; }
+  to { transform: scale(1.04); opacity: 1; }
+}
+@keyframes scanPulse {
+  0% { transform: translateX(-18px); opacity: 0.6; }
+  50% { transform: translateX(18px); opacity: 1; }
+  100% { transform: translateX(-18px); opacity: 0.6; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scanner-hero-icon, .scanner-loader-icon, .scan-beam { animation: none; }
+}
 .grid-two { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
 .metric-card { padding: 18px; border-radius: 16px; background: rgba(15,23,42,0.22); border: 1px solid var(--panel-border); }
 .metric-value { font-size: 1.6rem; font-weight: 800; margin-top: 8px; }
@@ -338,6 +375,7 @@ BASE_LAYOUT = """
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page_title }} | PhishShift Sentinel</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
   <style>{{ css | safe }}</style>
 </head>
 <body data-theme="dark">
@@ -349,7 +387,9 @@ BASE_LAYOUT = """
 
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark">P</div>
+        <div class="brand-mark">
+          <img src="{{ url_for('static', filename='img/phishshift_icon.svg') }}" alt="PhishShift Sentinel icon" class="brand-logo">
+        </div>
         <div class="brand-text">
           <h1>PhishShift Sentinel</h1>
           <small>Spot the shift. Stop the phish.</small>
@@ -386,6 +426,9 @@ BASE_LAYOUT = """
 SCANNER_PAGE = """
 <section class="dashboard">
   <div class="card">
+    <div class="scanner-hero">
+      <img src="{{ url_for('static', filename='img/phishshift_icon.svg') }}" alt="PhishShift Sentinel icon" class="scanner-hero-icon">
+    </div>
     <div class="panel-header">
       <h2>Message Scanner</h2>
       <span class="kicker">SOC triage</span>
@@ -430,6 +473,10 @@ SCANNER_PAGE = """
     </div>
     <div class="body">
       <div id="loader" style="display:none;">
+        <div class="scanner-loader">
+          <img src="{{ url_for('static', filename='img/phishshift_icon.svg') }}" alt="PhishShift Sentinel loading icon" class="scanner-loader-icon">
+          <div class="scan-beam" aria-hidden="true"></div>
+        </div>
         <div class="skeleton" style="height:14px; width:75%; margin:18px auto 8px;"></div>
         <div class="skeleton" style="height:14px; width:52%; margin:0 auto 20px;"></div>
         <div class="gauge-shell"><div class="gauge"><div class="gauge-value">--</div></div></div>
