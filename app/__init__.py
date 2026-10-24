@@ -5,6 +5,8 @@ from pathlib import Path
 
 from flask import Flask, render_template_string, request
 
+from src.robustness.perturb import analyze_drift
+
 BASE_CSS = """
 :root {
   --bg: #07111d;
@@ -539,17 +541,187 @@ ROBUSTNESS_PAGE = """
     <span class="kicker">Perturbation drift</span>
   </div>
   <div class="body">
-    <div class="chart-box" style="min-height:260px;">
-      <div class="chart-bar" style="height:22%"><span>Case</span></div>
-      <div class="chart-bar" style="height:37%"><span>Space</span></div>
-      <div class="chart-bar" style="height:52%"><span>Defang</span></div>
-      <div class="chart-bar" style="height:68%"><span>Punct</span></div>
-      <div class="chart-bar" style="height:82%"><span>Synonym</span></div>
-      <div class="chart-bar" style="height:58%"><span>Shortener</span></div>
+    <div class="robustness-controls">
+      <div class="sample-row">
+        <button class="sample-chip active" data-message="Urgent action required: verify your password before the account is suspended.">Credential reset</button>
+        <button class="sample-chip" data-message="Your payroll notice was updated; please review the secure portal before Friday.">Payroll check</button>
+        <button class="sample-chip" data-message="Final reminder: click the short link to claim your reward and confirm your identity.">Short link lure</button>
+      </div>
+      <textarea id="robustnessInput" rows="4" placeholder="Paste or type a message to stress-test">Urgent action required: verify your password before the account is suspended.</textarea>
+      <div class="button-row">
+        <button id="robustnessAnalyze" class="primary-button" type="button">Analyze drift</button>
+      </div>
     </div>
-    <div class="footnote">Probability shifts are monitored after harmless text perturbations and URL-token variants to measure model sensitivity.</div>
+    <div id="robustnessStatus" class="footnote">Decision support only - not a guarantee of safety.</div>
+    <div class="robustness-chart-shell">
+      <svg id="robustnessChart" viewBox="0 0 820 320" role="img" aria-label="Robustness drift chart"></svg>
+    </div>
+    <div id="robustnessLegend" class="chart-legend"></div>
+    <div id="robustnessCaption" class="footnote">Probability shifts are monitored after harmless text perturbations and URL-token variants to measure model sensitivity.</div>
+    <div id="robustnessLimitations" class="model-note"></div>
   </div>
 </section>
+<script>
+  const modelColours = {
+    rules: '#48d3ff',
+    tfidf_lr: '#3ae9a3',
+    third_model: '#ffba52'
+  };
+
+  function labelForModel(model) {
+    return model === 'rules' ? 'Rules' : (model === 'tfidf_lr' ? 'TF-IDF LR' : 'Third model');
+  }
+
+  function setMessageFromChip(message) {
+    const input = document.getElementById('robustnessInput');
+    input.value = message;
+    document.querySelectorAll('.sample-chip').forEach((chip) => {
+      chip.classList.toggle('active', chip.dataset.message === message);
+    });
+  }
+
+  function buildLimitNote(results) {
+    const flat = [];
+    results.forEach((row) => {
+      Object.entries(row.shift).forEach(([model, value]) => {
+        flat.push({ model, value: Number(value), perturbation: row.perturbation });
+      });
+    });
+    flat.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+    const largest = flat[0];
+    const byModel = {};
+    Object.keys(modelColours).forEach((model) => {
+      const row = results.reduce((best, current) => {
+        const val = Math.abs(Number(current.shift[model]));
+        return val > (best ? Math.abs(Number(best.shift[model])) : -1) ? current : best;
+      }, null);
+      byModel[model] = row ? row.perturbation : 'case';
+    });
+    return 'Model limitation: ' + labelForModel(largest.model) + ' shows the largest drift under ' + largest.perturbation + ' (' + largest.value.toFixed(2) + '). The strongest perturbation for each model is ' + Object.entries(byModel).map(([model, perturbation]) => labelForModel(model) + ' → ' + perturbation).join('; ') + '.';
+  }
+
+  function renderChart(results) {
+    const svg = document.getElementById('robustnessChart');
+    const legend = document.getElementById('robustnessLegend');
+    const noexcept = results && results.length ? results : [];
+    const modelKeys = ['rules', 'tfidf_lr', 'third_model'];
+    const allShifts = noexcept.flatMap((row) => modelKeys.map((model) => Number(row.shift[model])));
+    const yMin = Math.min(-0.12, ...allShifts, 0);
+    const yMax = Math.max(0.12, ...allShifts, 0);
+    const width = 820;
+    const height = 320;
+    const margin = { top: 18, right: 20, bottom: 60, left: 52 };
+    const innerW = width - margin.left - margin.right;
+    const innerH = height - margin.top - margin.bottom;
+    const xStep = innerW / noexcept.length;
+    const groupW = Math.min(76, xStep * 0.66);
+    const barW = groupW / modelKeys.length;
+    const yScale = (value) => margin.top + ((yMax - value) / (yMax - yMin || 1)) * innerH;
+
+    const axisLine = '<line x1="52" y1="' + (margin.top + innerH) + '" x2="' + (width - margin.right) + '" y2="' + (margin.top + innerH) + '" stroke="rgba(148,163,184,0.5)" stroke-width="1" />';
+    const zeroLine = '<line x1="52" y1="' + yScale(0) + '" x2="' + (width - margin.right) + '" y2="' + yScale(0) + '" stroke="rgba(148,163,184,0.35)" stroke-width="1" stroke-dasharray="4 6" />';
+    const axisLabels = noexcept.map((row, idx) => {
+      const cx = margin.left + idx * xStep + xStep / 2;
+      return '<text x="' + cx + '" y="' + (margin.top + innerH + 18) + '" text-anchor="middle" fill="#b4c3d8" font-size="11">' + row.perturbation.replace('_', ' ') + '</text>';
+    }).join('');
+    const yTicks = [yMin, yMin / 2, 0, yMax / 2, yMax].map((tick) => {
+      const y = yScale(tick);
+      return '<g><line x1="52" y1="' + y + '" x2="' + (width - margin.right) + '" y2="' + y + '" stroke="rgba(148,163,184,0.16)" stroke-width="1" /><text x="12" y="' + (y + 4) + '" fill="#b4c3d8" font-size="10">' + tick.toFixed(2) + '</text></g>';
+    }).join('');
+
+    const bars = noexcept.map((row, idx) => {
+      const baseX = margin.left + idx * xStep + (xStep - groupW) / 2;
+      return modelKeys.map((model, modelIdx) => {
+        const shift = Number(row.shift[model]);
+        const barHeight = Math.abs(yScale(shift) - yScale(0));
+        const x = baseX + modelIdx * barW + 4;
+        const y = shift >= 0 ? yScale(shift) : yScale(0);
+        const fill = modelColours[model];
+        const labelY = shift >= 0 ? y - 8 : y + barHeight + 14;
+        const valueText = '<text x="' + (x + barW / 2) + '" y="' + labelY + '" text-anchor="middle" fill="#e5eefb" font-size="10">' + shift.toFixed(2) + '</text>';
+        return '<rect x="' + x + '" y="' + y + '" width="' + (barW - 6) + '" height="' + Math.max(4, barHeight) + '" rx="6" fill="' + fill + '" opacity="0.9" />' + valueText;
+      }).join('');
+    }).join('');
+
+    svg.innerHTML = '<g>' + yTicks + axisLine + zeroLine + axisLabels + bars + '</g>';
+
+    legend.innerHTML = modelKeys.map((model) => '<span class="legend-pill"><span class="legend-swatch" style="background:' + modelColours[model] + '"></span>' + labelForModel(model) + '</span>').join('');
+    const caption = document.getElementById('robustnessCaption');
+    caption.textContent = 'Chart shows absolute probability shift by perturbation; positive values mean the model becomes more phishing-like, and negative values mean it becomes less sensitive.';
+    document.getElementById('robustnessLimitations').textContent = buildLimitNote(results);
+  }
+
+  async function analyzeRobustness() {
+    const input = document.getElementById('robustnessInput');
+    const value = (input.value || '').trim();
+    if (!value) {
+      input.focus();
+      return;
+    }
+    const response = await fetch('/api/robustness', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: value })
+    });
+    const data = await response.json();
+    renderChart(data.results || []);
+    document.getElementById('robustnessStatus').textContent = data.warning || 'Decision support only - not a guarantee of safety.';
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.sample-chip').forEach((chip) => {
+      chip.addEventListener('click', () => setMessageFromChip(chip.dataset.message));
+    });
+    document.getElementById('robustnessAnalyze').addEventListener('click', analyzeRobustness);
+    analyzeRobustness();
+  });
+</script>
+<style>
+  .robustness-controls {
+    display: grid; gap: 14px; margin-bottom: 18px;
+  }
+  .sample-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .sample-chip {
+    appearance: none; border: 1px solid rgba(72,211,255,0.22); background: rgba(15,23,42,0.4);
+    color: var(--text); border-radius: 999px; padding: 8px 12px; cursor: pointer;
+  }
+  .sample-chip.active {
+    background: rgba(72,211,255,0.18); border-color: rgba(72,211,255,0.4);
+  }
+  #robustnessInput {
+    width: 100%; border-radius: 14px; border: 1px solid var(--panel-border); background: rgba(15,23,42,0.34);
+    color: var(--text); padding: 12px 14px; resize: vertical; min-height: 96px;
+  }
+  .button-row {
+    display: flex; justify-content: flex-start;
+  }
+  .primary-button {
+    background: linear-gradient(135deg, rgba(72,211,255,0.3), rgba(59,130,246,0.18));
+    color: var(--text); border: 1px solid rgba(72,211,255,0.35); border-radius: 12px; padding: 10px 18px; cursor: pointer;
+  }
+  .robustness-chart-shell {
+    width: 100%; height: 340px; border-radius: 18px; border: 1px solid var(--panel-border);
+    background: rgba(15, 23, 42, 0.22); padding: 8px; overflow: hidden; margin-top: 14px;
+  }
+  #robustnessChart {
+    width: 100%; height: 100%; display: block;
+  }
+  .chart-legend {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; margin-bottom: 4px;
+  }
+  .legend-pill {
+    display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.82rem;
+  }
+  .legend-swatch {
+    width: 12px; height: 12px; border-radius: 50%; display: inline-block;
+  }
+  .model-note {
+    margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(148,163,184,0.24);
+    background: rgba(15,23,42,0.24); color: var(--text);
+  }
+</style>
 """
 
 ACCEPTANCE_PAGE = """
@@ -721,6 +893,16 @@ def create_app() -> Flask:
     @app.get("/robustness")
     def robustness():
         return render_template_string(BASE_LAYOUT, page_title="Robustness", active_nav="robustness", css=BASE_CSS, content=ROBUSTNESS_PAGE)
+
+    @app.post("/api/robustness")
+    @app.get("/api/robustness")
+    def robustness_api():
+        payload = request.get_json(silent=True) or {}
+        message = str(payload.get("message") or payload.get("text") or "").strip()
+        if not message:
+            message = "Urgent action required: verify your password before the account is suspended."
+        result = analyze_drift(message)
+        return result, 200
 
     @app.get("/acceptance")
     def acceptance():

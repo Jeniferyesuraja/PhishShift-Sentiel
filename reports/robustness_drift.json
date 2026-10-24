@@ -1,10 +1,125 @@
 {
-  "rows_processed": 3024,
-  "average_score": 6.7923,
+  "message": "Urgent action required: verify your password before the account is suspended.",
+  "rows_processed": 6,
+  "average_score": 0.0515,
   "perturbations": [
-    "Character substitution and token obfuscation",
-    "URL defanging and punctuation variation",
-    "Synonym and shorthand replacements"
+    "case",
+    "spacing",
+    "defang_url",
+    "punctuation",
+    "synonym_swap",
+    "shortener_token"
   ],
-  "notes": "Perturbation checks ensure the model does not overreact to harmless formatting changes while preserving risk cues."
+  "results": [
+    {
+      "perturbation": "case",
+      "baseline": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "perturbed": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "shift": {
+        "rules": 0.0,
+        "tfidf_lr": 0.0,
+        "third_model": 0.0
+      }
+    },
+    {
+      "perturbation": "spacing",
+      "baseline": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "perturbed": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "shift": {
+        "rules": 0.0,
+        "tfidf_lr": 0.0,
+        "third_model": 0.0
+      }
+    },
+    {
+      "perturbation": "defang_url",
+      "baseline": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "perturbed": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "shift": {
+        "rules": 0.0,
+        "tfidf_lr": 0.0,
+        "third_model": 0.0
+      }
+    },
+    {
+      "perturbation": "punctuation",
+      "baseline": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "perturbed": {
+        "rules": 1.0,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "shift": {
+        "rules": 0.21,
+        "tfidf_lr": 0.0,
+        "third_model": 0.0
+      }
+    },
+    {
+      "perturbation": "synonym_swap",
+      "baseline": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "perturbed": {
+        "rules": 0.39,
+        "tfidf_lr": 0.4454,
+        "third_model": 0.4849
+      },
+      "shift": {
+        "rules": -0.4,
+        "tfidf_lr": 0.0775,
+        "third_model": 0.0302
+      }
+    },
+    {
+      "perturbation": "shortener_token",
+      "baseline": {
+        "rules": 0.79,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "perturbed": {
+        "rules": 1.0,
+        "tfidf_lr": 0.3679,
+        "third_model": 0.4547
+      },
+      "shift": {
+        "rules": 0.21,
+        "tfidf_lr": 0.0,
+        "third_model": 0.0
+      }
+    }
+  ],
+  "warning": "Decision support only - not a guarantee of safety.",
+  "notes": "Perturbation checks monitor the drift caused by harmless formatting changes and URL token variations without opening links."
 }
