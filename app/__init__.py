@@ -97,11 +97,12 @@ code, pre, .mono { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, mo
   width: 40px; height: 40px; display: block;
   filter: drop-shadow(0 0 16px rgba(103, 232, 249, 0.18));
 }
-.scanner-hero {
-  display: flex; justify-content: center; padding: 18px 0 10px;
+.scanner-header-title {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0;
 }
 .scanner-hero-icon {
-  width: 96px; height: 96px; display: block;
+  width: 64px; height: 64px; display: block; flex-shrink: 0;
   filter: drop-shadow(0 0 18px rgba(103, 232, 249, 0.22));
   animation: logoGlow 3s ease-in-out infinite alternate;
 }
@@ -426,11 +427,11 @@ BASE_LAYOUT = """
 SCANNER_PAGE = """
 <section class="dashboard">
   <div class="card">
-    <div class="scanner-hero">
-      <img src="{{ url_for('static', filename='img/phishshift_icon.svg') }}" alt="PhishShift Sentinel icon" class="scanner-hero-icon">
-    </div>
     <div class="panel-header">
-      <h2>Message Scanner</h2>
+      <div class="scanner-header-title">
+        <img src="{{ url_for('static', filename='img/phishshift_icon.svg') }}" alt="PhishShift Sentinel logo" class="scanner-hero-icon">
+        <h2>Message Scanner</h2>
+      </div>
       <span class="kicker">SOC triage</span>
     </div>
     <div class="body">
