@@ -1,55 +1,111 @@
 {
-  "dataset_rows": 37,
-  "campaigns": 13,
+  "model_version": "phishshift-sentinel-v1.0",
+  "train_date": "2026-10-23",
+  "dataset_rows": 504,
+  "campaign_count": 18,
+  "split_strategy": "Grouped holdout by campaign_group",
+  "primary_metric": "Grouped-holdout F1 for TF-IDF LR = 0.6667",
+  "campaigns": 12,
   "holdout_campaigns": [
-    "hr_policy",
+    "qr_sms_smish",
     "vendor_invoice",
-    "team_meeting"
+    "it_maintenance"
   ],
   "grouped_holdout": {
     "rules": {
-      "accuracy": 0.125,
+      "accuracy": 0.75,
       "precision": 0.0,
       "recall": 0.0,
       "f1": 0.0,
-      "coverage": 0.375,
-      "covered_accuracy": 0.3333,
-      "false_positive_rate": 0.6667,
-      "coverage_at_abstain": 0.375,
-      "loco_mean_f1": 0.0,
-      "loco_std_f1": 0.0
+      "coverage": 0.75,
+      "roc_auc": 0.5,
+      "pr_auc": 0.5,
+      "false_positive_rate": 0.0,
+      "confusion_matrix": [
+        [
+          3,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "covered_accuracy": 1.0,
+      "coverage_at_abstain": 0.75,
+      "loco_mean_accuracy": 0.1944,
+      "loco_std_accuracy": 0.3882
     },
     "tfidf_lr": {
-      "accuracy": 0.0,
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1": 0.0,
-      "coverage": 0.0,
-      "false_positive_rate": 0.0,
-      "coverage_at_abstain": 0.0,
-      "loco_mean_f1": 0.9615,
-      "loco_std_f1": 0.1387
+      "accuracy": 0.75,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "coverage": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "false_positive_rate": 0.3333,
+      "confusion_matrix": [
+        [
+          2,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "covered_accuracy": 0.75,
+      "coverage_at_abstain": 1.0,
+      "loco_mean_accuracy": 0.9306,
+      "loco_std_accuracy": 0.166
     },
     "third_model": {
-      "accuracy": 0.0,
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1": 0.0,
-      "coverage": 0.0,
-      "false_positive_rate": 0.0,
-      "coverage_at_abstain": 0.0,
-      "loco_mean_f1": 0.9615,
-      "loco_std_f1": 0.1387
+      "accuracy": 0.75,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "coverage": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "false_positive_rate": 0.3333,
+      "confusion_matrix": [
+        [
+          2,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "covered_accuracy": 0.75,
+      "coverage_at_abstain": 1.0,
+      "loco_mean_accuracy": 0.9306,
+      "loco_std_accuracy": 0.166
     }
   },
   "random_split": {
     "rules": {
-      "accuracy": 0.0,
+      "accuracy": 0.25,
       "precision": 0.0,
       "recall": 0.0,
       "f1": 0.0,
       "coverage": 0.5,
-      "covered_accuracy": 0.0
+      "roc_auc": 0.5,
+      "pr_auc": 0.5,
+      "false_positive_rate": 0.5,
+      "confusion_matrix": [
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "covered_accuracy": 0.5
     },
     "tfidf_lr": {
       "accuracy": 1.0,
@@ -57,31 +113,253 @@
       "recall": 1.0,
       "f1": 1.0,
       "coverage": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion_matrix": [
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          2
+        ]
+      ],
       "covered_accuracy": 1.0
     },
     "third_model": {
-      "accuracy": 1.0,
-      "precision": 1.0,
+      "accuracy": 0.75,
+      "precision": 0.6667,
       "recall": 1.0,
-      "f1": 1.0,
+      "f1": 0.8,
       "coverage": 1.0,
-      "covered_accuracy": 1.0
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "false_positive_rate": 0.5,
+      "confusion_matrix": [
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "covered_accuracy": 0.75
     }
   },
   "loco": {
+    "rules": {
+      "mean_accuracy": 0.0,
+      "std_accuracy": 0.0,
+      "campaign_scores": [
+        {
+          "campaign_group": "fake_invoice",
+          "accuracy": 0.3333,
+          "f1": 0.5
+        },
+        {
+          "campaign_group": "mfa_fatigue",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "ceo_gift_card",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "payroll_update",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "storage_full",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "shortened_prize",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "hr_policy",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "qr_sms_smish",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "password_reset",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "payroll_slip",
+          "accuracy": 0.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "it_maintenance",
+          "accuracy": 1.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "vendor_invoice",
+          "accuracy": 1.0,
+          "f1": 0.0
+        }
+      ]
+    },
     "tfidf_lr": {
-      "mean_accuracy": 0.9615,
-      "std_accuracy": 0.1387
+      "mean_accuracy": 0.0,
+      "std_accuracy": 0.0,
+      "campaign_scores": [
+        {
+          "campaign_group": "fake_invoice",
+          "accuracy": 0.6667,
+          "f1": 0.8
+        },
+        {
+          "campaign_group": "mfa_fatigue",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "ceo_gift_card",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "payroll_update",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "storage_full",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "shortened_prize",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "hr_policy",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "qr_sms_smish",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "password_reset",
+          "accuracy": 1.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "payroll_slip",
+          "accuracy": 1.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "it_maintenance",
+          "accuracy": 0.5,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "vendor_invoice",
+          "accuracy": 1.0,
+          "f1": 0.0
+        }
+      ]
+    },
+    "third_model": {
+      "mean_accuracy": 0.0,
+      "std_accuracy": 0.0,
+      "campaign_scores": [
+        {
+          "campaign_group": "fake_invoice",
+          "accuracy": 0.6667,
+          "f1": 0.8
+        },
+        {
+          "campaign_group": "mfa_fatigue",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "ceo_gift_card",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "payroll_update",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "storage_full",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "shortened_prize",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "hr_policy",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "qr_sms_smish",
+          "accuracy": 1.0,
+          "f1": 1.0
+        },
+        {
+          "campaign_group": "password_reset",
+          "accuracy": 1.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "payroll_slip",
+          "accuracy": 1.0,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "it_maintenance",
+          "accuracy": 0.5,
+          "f1": 0.0
+        },
+        {
+          "campaign_group": "vendor_invoice",
+          "accuracy": 1.0,
+          "f1": 0.0
+        }
+      ]
     }
   },
   "leakage_gap": {
-    "accuracy_gap": 1.0,
-    "f1_gap": 1.0
+    "accuracy_gap": 0.25,
+    "f1_gap": 0.3333
   },
-  "accuracy": 0.0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "false_positive_rate": 0.0,
-  "coverage_at_abstain": 0.0
+  "accuracy": 0.75,
+  "precision": 0.5,
+  "recall": 1.0,
+  "f1": 0.6667,
+  "roc_auc": 1.0,
+  "pr_auc": 1.0,
+  "false_positive_rate": 0.3333,
+  "coverage_at_abstain": 1.0
 }
