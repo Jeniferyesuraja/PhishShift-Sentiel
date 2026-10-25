@@ -1,0 +1,161 @@
+{
+  "summary": {
+    "rows_scored": 1,
+    "phishing_rows": 0,
+    "legitimate_rows": 1,
+    "abstain_rows": 0,
+    "overall_verdict": "LEGITIMATE",
+    "label_column_present": true,
+    "warnings": [],
+    "errors": [],
+    "metrics_by_model": {
+      "Rules": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "legit_false_positive_rate": 0.0,
+        "campaign_breakdown": {
+          "mentor": {
+            "rows": 1,
+            "phishing_flagged": 0,
+            "false_positive_rate": 0.0,
+            "confusion_matrix": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        }
+      },
+      "TF-IDF LR": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "legit_false_positive_rate": 0.0,
+        "campaign_breakdown": {
+          "mentor": {
+            "rows": 1,
+            "phishing_flagged": 0,
+            "false_positive_rate": 0.0,
+            "confusion_matrix": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        }
+      },
+      "Third": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "legit_false_positive_rate": 0.0,
+        "campaign_breakdown": {
+          "mentor": {
+            "rows": 1,
+            "phishing_flagged": 0,
+            "false_positive_rate": 0.0,
+            "confusion_matrix": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "model_predictions": {
+      "Rules": [
+        "LEGITIMATE"
+      ],
+      "TF-IDF LR": [
+        "LEGITIMATE"
+      ],
+      "Third": [
+        "LEGITIMATE"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "message_id": "1",
+      "campaign_group": "mentor",
+      "p(Rules)": 0.0,
+      "p(TF-IDF LR)": 0.4721,
+      "p(Third)": 0.4984,
+      "verdict": "LEGITIMATE",
+      "abstain_flag": false,
+      "top_cues": "",
+      "model_scores": {
+        "Rules": {
+          "probability": 0.0,
+          "verdict": "LEGITIMATE",
+          "abstain": false,
+          "top_cues": []
+        },
+        "TF-IDF LR": {
+          "probability": 0.4721,
+          "verdict": "LEGITIMATE",
+          "abstain": false,
+          "top_cues": []
+        },
+        "Third": {
+          "probability": 0.4984,
+          "verdict": "LEGITIMATE",
+          "abstain": false,
+          "top_cues": []
+        }
+      }
+    }
+  ],
+  "record_count": 1,
+  "labels_detected": true
+}

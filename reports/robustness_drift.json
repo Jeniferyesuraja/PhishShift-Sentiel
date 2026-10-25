@@ -1,7 +1,7 @@
 {
   "message": "Urgent action required: verify your password before the account is suspended.",
   "rows_processed": 6,
-  "average_score": 0.0515,
+  "average_score": 0.0561,
   "perturbations": [
     "case",
     "spacing",
@@ -14,14 +14,14 @@
     {
       "perturbation": "case",
       "baseline": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "perturbed": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "shift": {
         "rules": 0.0,
@@ -32,14 +32,14 @@
     {
       "perturbation": "spacing",
       "baseline": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "perturbed": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "shift": {
         "rules": 0.0,
@@ -50,14 +50,14 @@
     {
       "perturbation": "defang_url",
       "baseline": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "perturbed": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "shift": {
         "rules": 0.0,
@@ -68,17 +68,17 @@
     {
       "perturbation": "punctuation",
       "baseline": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "perturbed": {
         "rules": 1.0,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "shift": {
-        "rules": 0.21,
+        "rules": 0.25,
         "tfidf_lr": 0.0,
         "third_model": 0.0
       }
@@ -86,35 +86,35 @@
     {
       "perturbation": "synonym_swap",
       "baseline": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "perturbed": {
-        "rules": 0.39,
-        "tfidf_lr": 0.4454,
-        "third_model": 0.4849
+        "rules": 0.35,
+        "tfidf_lr": 0.5023,
+        "third_model": 0.5074
       },
       "shift": {
         "rules": -0.4,
-        "tfidf_lr": 0.0775,
-        "third_model": 0.0302
+        "tfidf_lr": 0.0792,
+        "third_model": 0.0303
       }
     },
     {
       "perturbation": "shortener_token",
       "baseline": {
-        "rules": 0.79,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "rules": 0.75,
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "perturbed": {
         "rules": 1.0,
-        "tfidf_lr": 0.3679,
-        "third_model": 0.4547
+        "tfidf_lr": 0.4231,
+        "third_model": 0.4771
       },
       "shift": {
-        "rules": 0.21,
+        "rules": 0.25,
         "tfidf_lr": 0.0,
         "third_model": 0.0
       }

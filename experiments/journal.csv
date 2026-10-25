@@ -1,7 +1,7 @@
-split,model,accuracy,precision,recall,f1,coverage,covered_accuracy,false_positive_rate,coverage_at_abstain,loco_mean_f1,loco_std_f1
-grouped_holdout,rules,0.125,0.0,0.0,0.0,0.375,0.3333,0.6667,0.375,0.0,0.0
-grouped_holdout,tfidf_lr,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.9615,0.1387
-grouped_holdout,third_model,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.9615,0.1387
-random_split,rules,0.0,0.0,0.0,0.0,0.5,0.0,,,,
-random_split,tfidf_lr,1.0,1.0,1.0,1.0,1.0,1.0,,,,
-random_split,third_model,1.0,1.0,1.0,1.0,1.0,1.0,,,,
+split,model,accuracy,precision,recall,f1,coverage,roc_auc,pr_auc,false_positive_rate,confusion_matrix,covered_accuracy,coverage_at_abstain,loco_mean_accuracy,loco_std_accuracy
+grouped_holdout,rules,0.75,0.0,0.0,0.0,0.75,0.5,0.5,0.0,"[[3, 0], [0, 0]]",1.0,0.75,0.1944,0.3882
+grouped_holdout,tfidf_lr,0.75,0.5,1.0,0.6667,1.0,1.0,1.0,0.3333,"[[2, 1], [0, 1]]",0.75,1.0,0.9306,0.166
+grouped_holdout,third_model,0.75,0.5,1.0,0.6667,1.0,1.0,1.0,0.3333,"[[2, 1], [0, 1]]",0.75,1.0,0.9306,0.166
+random_split,rules,0.25,0.0,0.0,0.0,0.5,0.5,0.5,0.5,"[[1, 1], [0, 0]]",0.5,,,
+random_split,tfidf_lr,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,"[[2, 0], [0, 2]]",1.0,,,
+random_split,third_model,0.75,0.6667,1.0,0.8,1.0,1.0,1.0,0.5,"[[1, 1], [0, 2]]",0.75,,,
